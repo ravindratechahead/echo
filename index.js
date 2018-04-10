@@ -20,9 +20,9 @@ restService.use(bodyParser.json());
 
 restService.post("/echo", function(req, res) {
 
-  const app = new DialogflowApp({request, response});
-  console.log('Request headers: ' + JSON.stringify(request.headers));
-  console.log('Request body: ' + JSON.stringify(request.body));
+  const app = new DialogflowApp({req, res});
+  console.log('Request headers: ' + JSON.stringify(req.headers));
+  console.log('Request body: ' + JSON.stringify(req.body));
 
   // Make a silly name
   function makeName (app) {
@@ -39,7 +39,7 @@ restService.post("/echo", function(req, res) {
   app.handleRequest(actionMap);
   
 });
-
+/*
 restService.post("/audio", function(req, res) {
   var speech = "";
   switch (req.body.result.parameters.AudioSample.toLowerCase()) {
@@ -206,7 +206,7 @@ restService.post("/slack-test", function(req, res) {
       slack: slack_message
     }
   });
-});
+});*/
 
 restService.listen(process.env.PORT || 8000, function() {
   console.log("Server up and listening1");
