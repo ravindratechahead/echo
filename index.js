@@ -2,8 +2,13 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const { DialogflowApp } = require('actions-on-google');
 
 const restService = express();
+
+const NAME_ACTION = 'add';
+const FIRST_ARGUMENT = 'firstNumber';
+const SECOND_ARGUMENT = 'secondNumber';
 
 restService.use(
   bodyParser.urlencoded({
@@ -14,17 +19,25 @@ restService.use(
 restService.use(bodyParser.json());
 
 restService.post("/echo", function(req, res) {
-  var speech =
-    req.body.result &&
-    req.body.result.parameters &&
-    req.body.result.parameters.echoText
-      ? req.body.result.parameters.echoText
-      : "Seems like some problem. Speak again.";
-  return res.json({
-    speech: speech,
-    displayText: speech,
-    source: "webhook-echo-sample"
-  });
+
+  const app = new DialogflowApp({request, response});
+  console.log('Request headers: ' + JSON.stringify(request.headers));
+  console.log('Request body: ' + JSON.stringify(request.body));
+
+  // Make a silly name
+  function makeName (app) {
+    let firstNumber = app.getArgument(FIRST_ARGUMENT);
+    let secondNumber = app.getArgument(SECOND_ARGUMENT);
+    app.tell('Alright, your silly name is ' +
+      firstNumber + ' ' + secondNumber +
+      '! I hope you like it. See you next time.');
+  }
+
+  let actionMap = new Map();
+  actionMap.set(NAME_ACTION, makeName);
+
+  app.handleRequest(actionMap);
+  
 });
 
 restService.post("/audio", function(req, res) {
@@ -196,5 +209,5 @@ restService.post("/slack-test", function(req, res) {
 });
 
 restService.listen(process.env.PORT || 8000, function() {
-  console.log("Server up and listening");
+  console.log("Server up and listening1");
 });
